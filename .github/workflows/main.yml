@@ -1,0 +1,43 @@
+name: Pipeline CI/CD - Fase 2
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    name: Integração Contínua (CI)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Dependências
+        run: npm install
+
+      - name: Executar Testes
+        run: npm test
+
+  deploy:
+    name: Entrega Contínua (CD)
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: docker build -t meu-projeto-devops:latest .
+
+      - name: Simular Deploy (Docker Push/Run)
+        run: |
+          echo "Simulando o envio da imagem para o registro..."
+          echo "Deploy realizado com sucesso em ambiente de homologação!"
